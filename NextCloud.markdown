@@ -17,4 +17,67 @@ You may also consider using Cyberduck or other clients instead. <https://cyberdu
 Linux: There are many WebDAV applications available for Linux. Consult <https://docs.nextcloud.com/server/19/Nextcloud_User_Manual.pdf> for recommendations.<br>
 
 ## Using UNIX command line tools
+You can use any available WebDAV command line clients, like `curl` and `cadaver`, to copy files between your Unix computer and Nextcloud. Command line tools are useful when you want to copy data between a remote server you log in to and Nextcloud.<br>
 
+`curl` is usually installed on Mac OSX and Linux systems and can be used to upload and download files using a URL.<br>
+### Upload a file using `curl`
+```
+[name@server ~]$ curl -k -u <username> -T <filename> https://nextcloud.computecanada.ca/remote.php/webdav/
+```
+
+### Download a file using `curl`
+```
+[name@server ~]$ curl -k -u <username> https://nextcloud.computecanada.ca/remote.php/webdav/<filename> -o <filename>
+```
+
+### Upload and download files `rclone`
+Unlike `curl`, `rclone` lets you create a configuration once for each remote device and use it repeatedly without having to enter the service details and your password every time. The password will be stored encrypted in *~/.config/rclone/rclone.conf* on the computer or server where the `rclone` command is used.<br>
+First, install rclone on your computer if it has a Unix-like environment.<br>
+If used from Alliance's clusters, note that it is no necessary to install rclone as it is already available:<br>
+```
+$ [name@server ~] $ which rclone
+$ /cvfs/soft.computecanada.ca/gentoo/2023/x86-64-v3/usr/bin/rclone
+```
+Next, configure aremote storage device profile with<br>
+```
+$ rclone config
+```
+You now have the option to edit an existing remote device, create a new remote device, delete a remote device, and so on. Let's say we want to create a new remote serice profile *nextcloud*:
+```
+choose "n" for "New remote"
+Enter name for new remote --> nextcloud
+Type of storage to configure --> 52 / WebDAV
+URL of http host to connect to --> https://nextcloud.computecanada.ca/remote.php/dav/files/<your CCDB username>
+Name of the WebDAV site/service/software you are using --> 2 / Nexcloud
+User name --> <your CCDB username>
+choose "y" for "Option pass"
+Password --> <your CCDB password">
+Leave "Option bearer_token" empty
+choose "no" for "Edit advanced config"
+choose "yes" for "Keep this 'nextcloud' remote"
+choose "q" to quit config
+```
+You should now be able to see your new remote service profile in the list of configured ones with<br>
+```
+$ rclone listremotes
+```
+You can probe available disk space with
+```
+$ rclone about nextcloud
+```
+To upload a file, run
+```
+$ rclone copy /path/to/local/file nextcloud:remote/path
+```
+To download a file, run
+```
+$ rclone copy nextcloud:remote/path/file .
+```
+
+## Sharing files using Nextcloud
+When you select a file or directory to share, type the user's first name, last name, or username and the list of matched users registered in CCDB (Compute Canada Database) will be displayed in "Firstname Listname (username)" format. Please review the name carefully as some are very similar; in doubt, enter the username which is unique. You can also share files with a group using their CCDB group name (default, RPP, RRG, or other shared groups). To share a file with people who don't have an Alliance account, use the *Share link* option and provide their email address. Nextcloud will send an email notification with a link to access the file.<br>
+RRG: Resources for Research Groups<br>
+RRP: Research Platforms and Portals<br>
+
+
+Source: https://docs.alliancecan.ca/wiki/Nextcloud
