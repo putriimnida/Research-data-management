@@ -1,6 +1,6 @@
 # Packages and dependencies installation
 
-## CellChat installation
+## CellChat 
 ```{r}
 # define your library path
 user_lib <- "/cluster/home/xxxxxxxx/library"
@@ -40,7 +40,18 @@ devtools::install_github("jinworks/CellChat", lib=user_lib)
 # test
 library(CellChat, lib.loc=user_lib)
 packageVersion("CellChat")
+```
 
+## slingshot
+on login node, change to "library" directory, and then load R
+```{r}
+dir.create("/cluster/home/xxxxxxx/library", recursive = TRUE, showWarnings = FALSE)
+.libPaths("/cluster/home/xxxxxxxx/library")
+
+options(repos = c(CRAN="https://cloud.r-project.org"))
+
+if (!requireNamespace("BiocManager", quietly=TRUE)) install.packages("BiocManager")
+BiocManager::install("slingshot", ask=FALSE, update=FALSE)
 ```
 
 
